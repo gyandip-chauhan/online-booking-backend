@@ -1,0 +1,13 @@
+<!-- app/views/bookings/show.html.erb -->
+<div class="container">
+  <h1 class="mt-4">Booking Details</h1>
+
+  <div class="card my-3">
+    <div class="card-body">
+      <p class="card-text">User: <%= @booking.user.email %></p>
+      <p class="card-text">Date: <%= @booking.date %></p>
+      <p class="card-text">Movie: <%= @booking.showtime.movie.title %></p>
+      <p class="card-text">Theater: <%= @booking.showtime.theater.name %></p>
+    </div>
+  </div>
+</div>

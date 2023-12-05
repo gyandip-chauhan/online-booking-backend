@@ -1,0 +1,166 @@
+<!-- app/views/showtimes/show.html.erb -->
+<div class="container mt-5 movie-details-container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="display-4 movie-title"><%= @movie.title %></h1>
+      <p class="lead">Theater: <%= @theater.name %></p>
+      <p class="lead">Location: <%= @theater.location %></p>
+      <p class="lead"><strong>Date & Time:</strong> <%= @showtime.time.strftime('%B %d, %Y %I:%M %p') %></p>
+
+      <h2 class="mt-4">Available Seats</h2>
+      <div id="seat-map" class="mt-3">
+        <div class="row">
+          <div class="col-md-12">
+            <% @seat_categories.group_by(&:screen).each do |screen, screen_seat_categories| %>
+              <div class="screen mb-3">
+                <h4><%= screen.name %></h4>
+              </div>
+              <% screen_seat_categories.each do |seat_category| %>
+                <% showtime_seat = @showtime.showtime_seats.find_by(seat_category_id: seat_category.id) %>
+                <% theater_seats = seat_category.seats.split(",") %>
+                <% seats_per_row = [theater_seats.size, 10].min %>
+                <div class="row">
+                  <div class="col-md-2">
+                    <p><strong><%= seat_category.name %></strong></p>
+                  </div>
+                  <div class="col-md-10">
+                    <% theater_seats.each_slice(seats_per_row) do |row_seats| %>
+                      <div class="row">
+                        <% row_seats.each do |seat| %>
+                          <% seat_available = showtime_seat.nil? || !showtime_seat.seats.split(",").include?(seat.to_s) %>
+                          <div class="col-md-1">
+                            <%= link_to 'javascript:void(0)', class: "btn #{seat_available ? 'btn-success' : 'btn-outline-success'} m-1 seat-btn", disabled: seat_available, data: { showtime_id: @showtime.id, seat_number: seat, seat_price: seat_category.price, seat_category_name: seat_category.name } do %>
+                              <%= seat %>
+                            <% end %>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 mt-4">
+        <div class="card additional-info">
+          <div class="card-body text-center">
+            <p id="selected-seats-info"></p>
+            <p id="total-price-info"><strong>Total Price:</strong> ₹<span id="total-price">0.00</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-12 d-flex justify-content-center align-items-center mt-4">
+        <%= link_to 'Back', showtimes_path, class: 'btn btn-primary mr-3' %>
+        <%= link_to 'Book Now', 'javascript:void(0)', class: 'btn btn-success', id:"book-now-btn" %>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const selectedSeatsInfo = document.getElementById('selected-seats-info');
+  const totalPriceElement = document.getElementById('total-price');
+
+  let selectedSeats = {};
+  
+  document.querySelectorAll('.seat-btn').forEach(button => {
+    button.addEventListener('click', function (event) {
+      event.preventDefault();
+
+      const isDisabled = this.hasAttribute('disabled');
+
+      if (!isDisabled) {
+        const showtimeId = this.dataset.showtimeId;
+        const seatNumber = this.dataset.seatNumber;
+        const seatPrice = this.dataset.seatPrice;
+        const seatCatName = this.dataset.seatCategoryName;
+
+        if (this.classList.contains('btn-success')) {
+          if (selectedSeats[seatCatName]) {
+            this.classList.remove('btn-success');
+            this.classList.add('btn-outline-success')
+            selectedSeats[seatCatName] = selectedSeats[seatCatName].filter(seat => {
+              return seat.seat !== seatNumber;
+            });
+          }
+        } else {
+          this.classList.remove('btn-outline-success');
+          this.classList.add('btn-success');
+          if (selectedSeats[seatCatName]) {
+            selectedSeats[seatCatName].push({
+              seat: seatNumber,
+              price: seatPrice,
+            })
+          } else {
+            selectedSeats[seatCatName] = [{
+              seat: seatNumber,
+              price: seatPrice,
+            }];
+          }
+        }
+
+        const selectedSeatsByCategory = Object.entries(selectedSeats)
+          .map(([category, seats]) => {
+            const seatNumbers = seats.map(seat => seat.seat).join(',');
+            return `${category}: ${seatNumbers}`;
+          })
+          .join(' ');
+        selectedSeatsInfo.textContent = `Selected Seats: ${selectedSeatsByCategory}`;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+        fetch(`/showtimes/${showtimeId}/select_seat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken,
+          },
+          body: JSON.stringify({ selected_seats: selectedSeats }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            totalPriceElement.textContent = data.total_price.toFixed(2);
+          })
+          .catch(error => console.error('Error:', error));
+      } else {
+        alert('This seat is not available.');
+      }
+    });
+  });
+
+  document.getElementById('book-now-btn').addEventListener('click', function () {
+    bookNow();
+  });
+  
+  function bookNow() {
+    const showtimeId = document.querySelector('.seat-btn').dataset.showtimeId;
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    fetch(`/showtimes/${showtimeId}/book_now`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
+      },
+      body: JSON.stringify({ selected_seats: selectedSeats }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      // Handle the response, e.g., display a success message
+      console.log('Booking successful:', data);
+
+      if (data.redirect_to) {
+        console.log('Redirecting to:', data.redirect_to);
+        // Redirect only after the fetch request is complete
+        window.location.href = data.redirect_to;
+      } else {
+        console.log('No redirection path provided.');
+        // Handle other cases or display additional messages
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  }
+</script>

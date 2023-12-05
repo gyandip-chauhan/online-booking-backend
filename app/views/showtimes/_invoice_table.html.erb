@@ -1,0 +1,23 @@
+<!-- app/views/showtimes/_invoice_table.html.erb -->
+<div class="container mt-5">
+  <div class="invoice-container">
+    <h1>Invoice for Booking #<%= @booking.id %></h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Attribute</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @booking_details.each do |attribute, value| %>
+          <tr>
+            <td><%= attribute %></td>
+            <td><%= value %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

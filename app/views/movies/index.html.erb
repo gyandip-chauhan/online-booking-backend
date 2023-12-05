@@ -1,0 +1,14 @@
+<!-- app/views/movies/index.html.erb -->
+<div class="container">
+  <h1 class="mt-4">Movies</h1>
+
+  <% @movies.each do |movie| %>
+    <div class="card my-3">
+      <div class="card-body">
+        <h2 class="card-title"><%= movie.title %></h2>
+        <p class="card-text"><%= movie.description %></p>
+        <%= link_to 'View Theaters', movie_showtimes_path(movie), class: 'btn btn-primary' %>
+      </div>
+    </div>
+  <% end %>
+</div>

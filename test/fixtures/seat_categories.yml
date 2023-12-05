@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  start_num_of_seat: 1
+  end_num_of_seat: 1
+  seats: MyString
+  price: 
+
+two:
+  name: MyString
+  start_num_of_seat: 1
+  end_num_of_seat: 1
+  seats: MyString
+  price: 

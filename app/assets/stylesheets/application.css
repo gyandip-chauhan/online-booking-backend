@@ -13,3 +13,187 @@
  *= require_tree .
  *= require_self
  */
+/* Theater container styling */
+.theater-container {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Theater name styling */
+.theater-name {
+  color: #007bff; /* Blue color, you can change it to your preferred color */
+/*  margin-bottom: 10px;*/
+}
+
+/* Theater location styling */
+.theater-location {
+  color: #555;
+  margin-bottom: 20px;
+}
+
+/* Screen name styling */
+.screen-name {
+  color: #28a745; /* Green color, you can change it to your preferred color */
+  margin-bottom: 10px;
+}
+
+/* Card styling */
+.card {
+  height: 100%;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+
+/* Button styling */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+.empty-tab-message {
+  text-align: center;
+  margin-top: 20px;
+  color: #555;
+}
+
+/* Additional style for when the main content is empty */
+.empty-main-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.tab-content {
+  min-height: 100px; /* Set a minimum height for the tab content */
+}
+
+.nav-tabs {
+  margin-bottom: 20px;
+}
+
+/* Style for showtime cards */
+.card {
+  margin-bottom: 20px;
+}
+
+/* Style for active tab */
+.nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Style for carousel container */
+.carousel {
+  margin-bottom: 20px;
+}
+
+/* Style for carousel items */
+.carousel-item {
+  text-align: center;
+}
+
+/* Style for card container */
+.card-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Style for individual card */
+.card {
+  width: 300px;
+  margin: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+/* Card image */
+.card-img-top {
+  width: 100%;
+  height: 200px; /* Set your desired height */
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Card body */
+.card-body {
+  padding: 20px;
+}
+
+/* Card title */
+.card-title {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+/* Card text */
+.card-text {
+  color: #666;
+}
+
+/* Book Now button */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+#seat-map {
+  text-align: center;
+}
+
+#seat-map a, #seat-map a:link, #seat-map a:visited {
+  color: inherit !important; /* your desired color */
+  text-decoration: none !important; /* your desired text decoration */
+}
+
+.screen {
+  background-color: #343a40; /* Dark background color for the screen */
+  color: #fff;
+  padding: 10px;
+}
+
+/* Styles for Movie Details Container */
+.movie-details-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles for Movie Title */
+.movie-title {
+  color: #333;
+}
+
+/* Styles for Back Button */
+.back-btn {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+/* Styles for Additional Information Card */
+.additional-info {
+  text-align: center;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+}
+

@@ -1,0 +1,29 @@
+<div class="container mt-5">
+  <h1 class="display-4">Showtimes</h1>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" id="myTabs">
+    <% @categories.each do |category| %>
+      <li class="nav-item">
+        <a class="nav-link <%= category == @categories.first ? 'active' : '' %>" id="tab-<%= category.name.parameterize %>" data-toggle="tab" href="#<%= category.name.parameterize %>">
+          <%= category.name %>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content mt-3">
+    <% @categories.each do |category| %>
+      <div class="tab-pane fade <%= category == @categories.first ? 'show active' : '' %>" id="<%= category.name.parameterize %>">
+        <% if category.movies.blank? || category.movies.flat_map(&:showtimes).blank? %>
+          <div class="empty-main-content">
+            <p class="empty-tab-message">No showtimes available for this category.</p>
+          </div>
+        <% else %>
+          <%= render 'showtime_tab', category: category, showtimes: category.movies.flat_map(&:showtimes) %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

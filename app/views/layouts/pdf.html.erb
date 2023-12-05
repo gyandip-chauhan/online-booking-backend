@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PDF Layout</title>
+  <%= wicked_pdf_stylesheet_link_tag "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" %>
+  <%= wicked_pdf_javascript_include_tag "https://code.jquery.com/jquery-3.3.1.slim.min.js" %>
+  <%= wicked_pdf_javascript_include_tag "https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" %>
+  <%= wicked_pdf_javascript_include_tag "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" %>
+  <%= csrf_meta_tags %>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+    }
+
+    .container {
+      margin: 50px;
+    }
+
+    .invoice-container {
+      max-width: 600px;
+      margin: 0 auto;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #fff;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <%= yield %>
+  </div>
+</body>
+</html>

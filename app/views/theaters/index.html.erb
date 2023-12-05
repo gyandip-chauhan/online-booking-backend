@@ -1,0 +1,24 @@
+<!-- app/views/theaters/index.html.erb -->
+<h1>Theaters</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Location</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @theaters.each do |theater| %>
+      <tr>
+        <td><%= theater.name %></td>
+        <td><%= theater.location %></td>
+        <td>
+          <%= link_to 'Show', theater %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

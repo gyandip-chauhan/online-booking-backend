@@ -45,6 +45,21 @@ gem "bootsnap", require: false
 gem "devise"
 gem 'devise-bootstrap-views', '~> 1.0'
 
+gem 'recommendable'
+
+gem 'activeadmin'
+
+gem 'sassc-rails', '>= 2.1.2'
+
+gem 'paper_trail'
+
+gem 'mini_magick'
+
+gem 'image_processing', '~> 1.2'
+
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
+
 
 # Use Sass to process CSS
 # gem "sassc-rails"

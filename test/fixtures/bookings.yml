@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  movie: one
+  theater: one
+  date: 2023-11-29 16:16:13
+
+two:
+  user: two
+  movie: two
+  theater: two
+  date: 2023-11-29 16:16:13
