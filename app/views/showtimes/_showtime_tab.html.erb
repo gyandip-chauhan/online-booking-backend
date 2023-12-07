@@ -18,8 +18,8 @@
                   <div class="row">
                     <% batch.each do |showtime| %>
                       <div class="col-md-4">
-                        <div class="card mb-3" style="height: 100%;">
-                          <img src="<%= url_for(showtime.movie.avatar) if showtime.movie.avatar.attached? %>" class="card-img-top" alt="Movie Poster" style="height: 200px; object-fit: cover;">
+                        <div class="card mb-3" style="height: 100%; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                          <img src="<%= url_for(showtime.movie.avatar) if showtime.movie.avatar.attached? %>" class="card-img-top" alt="Movie Poster" style="height: 200px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
                           <div class="card-body">
                             <h5 class="card-title"><%= showtime.movie.title %></h5>
                             <p class="card-text"><strong>Date & Time:</strong> <%= showtime.time.strftime('%B %d, %Y %I:%M %p') %></p>
@@ -49,12 +49,12 @@
             <div class="row">
               <% theater_screen_showtimes.each do |showtime| %>
                 <div class="col-md-4">
-                  <div class="card mb-3" style="height: 100%;">
-                    <img src="<%= url_for(showtime.movie.avatar) if showtime.movie.avatar.attached? %>" class="card-img-top" alt="Movie Poster" style="height: 200px; object-fit: cover;">
+                  <div class="card mb-3" style="height: 100%; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                    <img src="<%= url_for(showtime.movie.avatar) if showtime.movie.avatar.attached? %>" class="card-img-top" alt="Movie Poster" style="height: 200px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
                     <div class="card-body">
                       <h5 class="card-title"><%= showtime.movie.title %></h5>
                       <p class="card-text"><strong>Date & Time:</strong> <%= showtime.time.strftime('%B %d, %Y %I:%M %p') %></p>
-                      <%= link_to 'Book Now', showtime_path(showtime, theater_id: theater.id, screen_id: screen.id, movie_id: showtime.movie_id), class: 'btn btn-primary' %>
+                      <%= link_to 'Book Now', showtime_path(showtime, theater_id: theater.id, screen_id: screen.id, movie_id: showtime.movie_id), class: 'btn btn-primary btn-sm' %>
                     </div>
                   </div>
                 </div>

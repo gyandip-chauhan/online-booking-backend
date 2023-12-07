@@ -23,8 +23,8 @@ class Showtime < ApplicationRecord
     total_price = 0.0
 
     # Preload seat categories and showtime seats
-    seat_categories = SeatCategory.includes(:showtime_seats).where(name: selected_seats.keys)
-    showtime_seats = ShowtimeSeat.includes(:seat_category).where(seat_category: seat_categories)
+    seat_categories = SeatCategory.includes(:showtime_seats).where(name: selected_seats.keys, movie: movie, screen: screen, theater: theater)
+    showtime_seats = self.showtime_seats.includes(:seat_category).where(seat_category: seat_categories)
 
     ActiveRecord::Base.transaction do
       begin
@@ -38,31 +38,32 @@ class Showtime < ApplicationRecord
           available_seats = (showtime_seat.seats.split(",") - selected_seat_numbers).join(",")
 
           unless showtime_seat.update(seats: available_seats)
-            raise ActiveRecord::Rollback, "Error updating showtime seat: #{showtime_seat.errors.full_messages.join(', ')}"
+            raise ActiveRecord::RecordInvalid, showtime_seat
           end
 
           selected_seats_price = (selected_seat_numbers.size * seat_category.price.to_f).round(2)
           total_price += selected_seats_price
 
           unless booking.booked_seats.create!(seat_category: seat_category, seats: selected_seat_numbers.join(","), price: selected_seats_price)
-            raise ActiveRecord::Rollback, "Error creating booked seats: #{booking.errors.full_messages.join(', ')}"
+            raise ActiveRecord::RecordInvalid, booking
           end
         end
 
         # Update booking total price
         unless booking.update(total_price: total_price.round(2))
-          raise ActiveRecord::Rollback, "Error updating booking: #{booking.errors.full_messages.join(', ')}"
+          raise ActiveRecord::RecordInvalid, booking
         end
 
         puts "Updated available seats and booked seats. Total price: #{total_price.round(2)}"
+      rescue ActiveRecord::RecordInvalid => e
+        puts "Error updating seats or creating booking: #{e.record.errors.full_messages.join(', ')}"
+        raise e
       rescue ActiveRecord::Rollback => e
         puts "Transaction rolled back: #{e.message}"
-        # You can log the error or handle it in a way that fits your application
         raise e
       end
     end
   end
-
 
   private
 

@@ -16,7 +16,7 @@
                 <h4><%= screen.name %></h4>
               </div>
               <% screen_seat_categories.each do |seat_category| %>
-                <% showtime_seat = @showtime.showtime_seats.find_by(seat_category_id: seat_category.id) %>
+                <% showtime_seat = @showtime_seats_group_by_sc[seat_category] %>
                 <% theater_seats = seat_category.seats.split(",") %>
                 <% seats_per_row = [theater_seats.size, 10].min %>
                 <div class="row">

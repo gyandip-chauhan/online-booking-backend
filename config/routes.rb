@@ -15,16 +15,16 @@ Rails.application.routes.draw do
   end
 
   resources :showtimes do
-    resources :bookings, only: [:new, :create]
     member do
       post 'book_now'
       post 'select_seat'
-      get 'invoice'
     end
   end
 
-  resources :bookings, only: [:show] do
+  resources :bookings, only: [:index] do
     member do
+      get 'invoice'
+      get 'cancel'
       get 'versions'
     end
   end

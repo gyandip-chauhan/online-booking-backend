@@ -1,0 +1,9 @@
+<!-- app/views/bookings/invoice.html.erb -->
+<div class="container mt-5">
+  <div class="invoice-container">
+    <%= render 'bookings/invoice_table' %>
+
+    <%= link_to 'Back', showtimes_path, class: 'btn btn-primary mr-3' %>
+    <%= link_to 'Download Invoice', invoice_booking_path(@booking, showtime_id: @showtime.id, format: :pdf), target: '_blank', class: 'btn btn-success', id: 'downloadButton' %>
+  </div>
+</div>

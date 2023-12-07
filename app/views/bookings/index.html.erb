@@ -1,0 +1,29 @@
+<!-- app/views/bookings/index.html.erb -->
+<div class="container mt-5 p-4" style="background-color: #f8f9fa; border-radius: 15px;">
+  <h1 class="mb-4">My Bookings</h1>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" id="myTabs">
+    <% @categories.each do |category| %>
+      <li class="nav-item">
+        <%= link_to category.titleize, "#", class: "nav-link #{category == @active_tab ? 'active' : ''}", id: "tab-#{category}", data: { toggle: "tab", target: "##{category}" } %>
+      </li>
+    <% end %>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content mt-3">
+    <% @categories.each do |category| %>
+      <div class="tab-pane fade <%= category == @active_tab ? 'show active' : '' %>" id="<%= category %>">
+        <% bookings = category == 'my_bookings' ? @my_bookings : @cancel_bookings %>
+        <% if bookings.blank? %>
+          <div class="empty-main-content">
+            <p class="empty-tab-message text-muted">No bookings available for this category.</p>
+          </div>
+        <% else %>
+          <%= render 'booking_tab', bookings: bookings, category: category %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+<!-- app/views/bookings/_booking_tab.html.erb -->
+<div class="theater-container">
+  <% if bookings.present? %>
+    <div class="row">
+      <% bookings.each do |booking| %>
+        <% booking_showtime = booking.showtime %>
+        <% movie_avatar_url = Rails.application.routes.url_helpers.rails_blob_url(booking_showtime.movie.avatar, only_path: true) if booking_showtime.movie.avatar.attached? %>
+        <div class="col-md-4 mb-4">
+          <div class="card mb-3" style="height: 100%; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <img src="<%= movie_avatar_url %>" class="card-img-top" alt="Movie Poster" style="height: 200px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+            <div class="card-body">
+              <h5 class="card-title"><%= booking_showtime.time.strftime('%B %d, %Y %I:%M %p') %></h5>
+              <p class="card-text"><strong>Movie:</strong> <%= booking_showtime.movie.title %></p>
+              <p class="card-text"><strong>Theater:</strong> <%= booking_showtime.theater.name %></p>
+              <p class="card-text"><strong>Location:</strong> <%= booking_showtime.theater.location %></p>
+              <p class="card-text"><strong>Seats:</strong> <%= booking.booked_seats.group_by(&:seat_category).map { |sc, b_seats| "#{sc.name}: #{b_seats.pluck(:seats).join(',')}" }.flatten.join(",") %></p>
+              <% if category == 'my_bookings' %>
+                <%= link_to "Cancel Booking", cancel_booking_path(booking), method: :post, class: "btn btn-danger btn-sm", data: { confirm: "Are you sure you want to cancel this booking?" } %>
+              <% end %>
+              <%= link_to "View Invoice", invoice_booking_path(booking, showtime_id: booking.showtime_id), class: "btn btn-success btn-sm" %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No bookings found.</p>
+  <% end %>
+</div>

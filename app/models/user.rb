@@ -6,4 +6,12 @@ class User < ApplicationRecord
   recommends :movies, :theaters
   has_many :ratings
   has_many :bookings
+
+  def my_bookings
+    bookings.where(is_cancelled: false)
+  end
+
+  def cancel_bookings
+    bookings.where(is_cancelled: true)
+  end
 end
