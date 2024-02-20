@@ -9,7 +9,7 @@ class ShowtimesController < ApplicationController
     @theater = Theater.find(params[:theater_id])
     @screen = Screen.find(params[:screen_id])
     @movie = Movie.find(params[:movie_id])
-    @seat_categories = SeatCategory.where(screen: @screen, theater: @theater, movie: @movie)
+    @seat_categories = SeatCategory.where(screen: @screen, theater: @theater, movie: @movie).order("price DESC")
     @showtime_seats_group_by_sc = ShowtimeSeat.where(showtime: @showtime, seat_category: @seat_categories).group_by(&:seat_category).transform_values{|val| val.first}
     respond_to do |format|
       format.html

@@ -1,0 +1,23 @@
+# docker-compose.yml
+version: "3.8"
+volumes:
+  db-data:
+    external: false
+services:
+  db:
+    environment:
+      POSTGRES_USER: gyandip
+      POSTGRES_PASSWORD: gyandip
+    image: postgres:9.5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  app:
+    env_file: .env
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:create db:migrate db:seed && bundle exec rails s -b '0.0.0.0'"
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db

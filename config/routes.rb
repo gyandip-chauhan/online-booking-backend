@@ -1,3 +1,6 @@
+require 'sidekiq/web'
+require 'sidekiq/cron/web'
+
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
@@ -5,7 +8,8 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")
-  root 'showtimes#index' 
+  root 'showtimes#index'
+  mount Sidekiq::Web => '/sidekiq'
 
   resources :movies, only: [:index] do
     resources :ratings, only: [:new, :create]
@@ -33,6 +37,12 @@ Rails.application.routes.draw do
     resources :ratings, only: [:new, :create]
     member do
       post 'rate'
+    end
+  end
+
+  resources :events_raws, only: [:index] do
+    collection do
+      get :filter_options
     end
   end
 end

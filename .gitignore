@@ -33,3 +33,7 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
+
+#Ignore ENV and database
+.env
+config/database.yml

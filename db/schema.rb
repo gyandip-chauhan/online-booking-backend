@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_07_121054) do
+ActiveRecord::Schema[7.0].define(version: 2024_01_12_131901) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -88,6 +88,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_07_121054) do
     t.boolean "is_cancelled", default: false
     t.index ["showtime_id"], name: "index_bookings_on_showtime_id"
     t.index ["user_id"], name: "index_bookings_on_user_id"
+  end
+
+  create_table "events_raws", force: :cascade do |t|
+    t.string "section"
+    t.string "stage"
+    t.bigint "event_order"
+    t.string "event"
+    t.datetime "event_date"
+    t.bigint "count_column"
+    t.bigint "project_id"
+    t.string "project_name"
+    t.string "project_status"
+    t.bigint "build_card_id"
+    t.string "start_month"
+    t.string "build_card_type"
+    t.string "region"
+    t.string "period_type"
+    t.string "month_year"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "movie_categories", force: :cascade do |t|

@@ -1,0 +1,35 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  section: MyString
+  stage: MyString
+  event_order: 
+  event: MyString
+  event_date: 2024-01-12 18:49:01
+  count_column: 
+  project_id: 
+  project_name: MyString
+  project_status: MyString
+  build_card_id: 
+  start_month: MyString
+  build_card_type: MyString
+  region: MyString
+  period_type: MyString
+  month_year: MyString
+
+two:
+  section: MyString
+  stage: MyString
+  event_order: 
+  event: MyString
+  event_date: 2024-01-12 18:49:01
+  count_column: 
+  project_id: 
+  project_name: MyString
+  project_status: MyString
+  build_card_id: 
+  start_month: MyString
+  build_card_type: MyString
+  region: MyString
+  period_type: MyString
+  month_year: MyString
