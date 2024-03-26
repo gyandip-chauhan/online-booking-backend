@@ -1,6 +1,7 @@
 require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
+
 Rails.application.routes.draw do
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
@@ -43,6 +44,8 @@ Rails.application.routes.draw do
   resources :events_raws, only: [:index] do
     collection do
       get :filter_options
+      get :filter_data_via_odbc
+      get :filter_options_via_odbc
     end
   end
 end
