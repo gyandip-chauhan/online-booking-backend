@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_03_12_140439) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_04_130619) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -79,6 +79,19 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_12_140439) do
     t.index ["seat_category_id"], name: "index_booked_seats_on_seat_category_id"
   end
 
+  create_table "booking_transactions", force: :cascade do |t|
+    t.bigint "booking_id", null: false
+    t.bigint "user_id", null: false
+    t.string "stripe_payment_id"
+    t.string "payment_provider"
+    t.integer "status", default: 0
+    t.integer "amount"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["booking_id"], name: "index_booking_transactions_on_booking_id"
+    t.index ["user_id"], name: "index_booking_transactions_on_user_id"
+  end
+
   create_table "bookings", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "showtime_id", null: false
@@ -86,6 +99,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_12_140439) do
     t.datetime "updated_at", null: false
     t.bigint "total_price"
     t.boolean "is_cancelled", default: false
+    t.string "stripe_payment_method_id"
+    t.string "source"
+    t.integer "status", default: 0
+    t.datetime "stripe_payment_confirmed_at"
     t.index ["showtime_id"], name: "index_bookings_on_showtime_id"
     t.index ["user_id"], name: "index_bookings_on_user_id"
   end
@@ -215,6 +232,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_12_140439) do
     t.boolean "referrer_reward"
     t.boolean "referred_reward"
     t.integer "balance", default: 0
+    t.string "token"
+    t.string "stripe_id"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -233,6 +252,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_03_12_140439) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "booked_seats", "bookings"
   add_foreign_key "booked_seats", "seat_categories"
+  add_foreign_key "booking_transactions", "bookings"
+  add_foreign_key "booking_transactions", "users"
   add_foreign_key "bookings", "showtimes"
   add_foreign_key "bookings", "users"
   add_foreign_key "movies", "movie_categories"

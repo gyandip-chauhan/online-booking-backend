@@ -4,8 +4,10 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
   recommends :movies, :theaters
-  has_many :ratings
-  has_many :bookings
+  has_many :ratings, dependent: :destroy
+  has_many :bookings, dependent: :destroy
+  has_many :booking_transactions, dependent: :destroy
+  before_create :set_token
 
   def my_bookings
     bookings.where(is_cancelled: false)
@@ -13,5 +15,25 @@ class User < ApplicationRecord
 
   def cancel_bookings
     bookings.where(is_cancelled: true)
+  end
+
+  def self.create_stripe_customers(account)
+    stripe_customer = Stripe::Customer.create({ email: account.email })
+    account.stripe_id = stripe_customer.id
+    account.save
+  end
+
+  def self.ransackable_attributes(auth_object = nil)
+    ["balance", "created_at", "email", "id", "referral_code", "referred_reward", "referrer_reward", "remember_created_at", "reset_password_sent_at", "reset_password_token", "stripe_id", "token", "updated_at"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["booking_transactions", "bookings", "ratings"]
+  end
+
+  private
+
+  def set_token
+    self.token = SecureRandom.base58(50)
   end
 end

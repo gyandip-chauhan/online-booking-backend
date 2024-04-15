@@ -15,4 +15,12 @@ class Movie < ApplicationRecord
   def self.ransackable_associations(auth_object = nil)
     ["movie_category", "ratings", "showtimes", "seat_categories"]
   end
+
+  def avatar_url
+    if avatar.attached?
+      nil #Rails.application.routes.url_helpers.rails_blob_path(avatar, only_path: true)
+    else
+      nil
+    end
+  end
 end

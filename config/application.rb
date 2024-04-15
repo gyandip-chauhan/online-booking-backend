@@ -18,5 +18,8 @@ module RubyTest
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    # config.web_console.whitelisted_ips = '192.168.31.211'
+    # config.action_dispatch.cookies_same_site_protection = :none
+    # config.action_controller.default_protect_from_forgery = false
   end
 end

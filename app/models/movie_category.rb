@@ -1,5 +1,6 @@
 class MovieCategory < ApplicationRecord
   has_many :movies, dependent: :destroy
+  has_many :showtimes, through: :movies
   validates :name, presence: true
 
   def self.ransackable_attributes(auth_object = nil)

@@ -12,6 +12,35 @@ ActiveAdmin.register Showtime do
     actions
   end
 
+  show do
+    attributes_table do
+      row :id
+      row :movie
+      row :theater
+      row :screen
+      row :time
+    end
+
+    panel "Showtime Seats" do
+      table_for showtime.showtime_seats.includes(:seat_category) do
+        column "Seat Category" do |showtime_seat|
+          showtime_seat.seat_category.name
+        end
+        column "Seats" do |showtime_seat|
+          showtime_seat.seats
+        end
+      end
+    end
+
+    panel "Associated Bookings" do
+      table_for showtime.bookings do
+        column :id do |booking|
+          link_to "Booking ##{booking.id}", admin_booking_path(booking)
+        end
+      end
+    end
+  end
+
   filter :movie
   filter :theater
   filter :screen

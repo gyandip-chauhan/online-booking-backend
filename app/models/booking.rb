@@ -1,15 +1,21 @@
 class Booking < ApplicationRecord
-  has_paper_trail
   belongs_to :user
   belongs_to :showtime
   has_one :movie, through: :showtime
   has_one :theater, through: :showtime
   has_many :booked_seats, dependent: :destroy
+  has_many :booking_transactions, dependent: :destroy
 
-  after_destroy :update_showtime_seats
+  before_destroy :update_showtime_seats
+
+  enum :status, [ :payment_pending, :confirmed ]
 
   def self.ransackable_attributes(auth_object = nil)
-    %w[id movie.title theater.name theater.location created_at updated_at user.email user.username seats]
+    super & %w[id total_price is_cancelled stripe_payment_method_id source status movie.title theater.name theater.location created_at updated_at user.email user.username seats]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["booked_seats", "booking_transactions", "showtime", "user", "movie", "theater"]
   end
 
   def cancel_booking
@@ -27,7 +33,6 @@ class Booking < ApplicationRecord
             raise ActiveRecord::RecordInvalid, showtime_seat
           end
         end
-
         
         unless self.update(is_cancelled: true, total_price: 0.0)
           raise ActiveRecord::RecordInvalid, self

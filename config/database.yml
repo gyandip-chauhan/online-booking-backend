@@ -14,11 +14,11 @@ default: &default
 
 development:
   <<: *default
-  database: db/development.sqlite3
+  database: ruby-test-development
 
 test:
   <<: *default
-  database: db/test.sqlite3
+  database: ruby-test-test
 
 production:
   <<: *default
