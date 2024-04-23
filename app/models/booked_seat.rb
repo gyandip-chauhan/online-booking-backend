@@ -15,6 +15,11 @@ class BookedSeat < ApplicationRecord
     booked_seats_seats = self.seats.split(',')
 
     # Check if any of the seats are already booked for this seat category and not the current booking
+    p "==============asdasd"
+    p BookedSeat.where(seat_category_id: self.seat_category_id)
+    .where("ARRAY[?]::text[] && string_to_array(seats, ',')", booked_seats_seats)
+    .where.not(booking_id: self.booking_id)
+    .exists?
     if BookedSeat.where(seat_category_id: self.seat_category_id)
                  .where("ARRAY[?]::text[] && string_to_array(seats, ',')", booked_seats_seats)
                  .where.not(booking_id: self.booking_id)

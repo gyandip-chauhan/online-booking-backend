@@ -11,16 +11,21 @@ module InternalApi::V1
         selected_seats = payment_params[:selected_seats] || {}
     
         ActiveRecord::Base.transaction do
-          booking = current_user.bookings.create(showtime: showtime)
-    
-          if booking.present? && showtime.update_available_seats(selected_seats, booking)
+          booking = current_user.bookings.build(showtime: showtime)
+          
+          if booking.valid?  # Check validity before proceeding
+            showtime.update_available_seats(selected_seats, booking)
             user = current_user
             amount = booking.total_price.to_i * 100
             User.create_stripe_customers(current_user)
             payment_intent = create_payment_intent(amount, params['data']['payment_token'])
     
             if payment_intent
-              booking.update_column(:stripe_payment_method_id, payment_intent['payment_method'])
+              booking.transaction do  # Another transaction block for booking save
+                booking.save!
+                booking.update_column(:stripe_payment_method_id, payment_intent['payment_method'])
+              end
+    
               render json: {
                 notice: 'Payment initiated successfully.',
                 booking_id: booking.id,
@@ -43,6 +48,7 @@ module InternalApi::V1
         render json: { success: false, error: "An unexpected error occurred: #{e.message}" }, status: :internal_server_error
       end
     end
+    
 
     def confirm
       payment_params = params

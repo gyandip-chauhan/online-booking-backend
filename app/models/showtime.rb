@@ -4,7 +4,6 @@ class Showtime < ApplicationRecord
   belongs_to :screen
   has_many :bookings, dependent: :destroy
   has_many :showtime_seats, dependent: :destroy
-  has_many :showtimes, through: :movie
 
   validates :time, presence: true
   validate :time_cannot_be_in_the_past
@@ -20,6 +19,18 @@ class Showtime < ApplicationRecord
 
   def self.ransackable_associations(auth_object = nil)
     ["bookings", "movie", "theater", "screen"]
+  end
+
+  def self.filter(params)
+    price_range = params[:price_range].present? ? params[:price_range].split('-').map(&:to_i) : nil
+    date = params[:date].present? ? Date.parse(params[:date]) : Date.current
+
+    filter_showtimes = includes(:showtime_seats, :theater, :movie).where('DATE(time) = ?', date) if date.present?
+    filter_showtimes = filter_showtimes.where(movie_id: params[:movie_id]) if params[:movie_id].present?
+    filter_showtimes = filter_showtimes.where(screen_id: params[:screen_id]) if params[:screen_id].present?
+    filter_showtimes = filter_showtimes.where(showtime_seats: { seat_category_id: SeatCategory.where(price: price_range) }) if price_range.present?
+    filter_showtimes = filter_showtimes.where(theater_id: params[:theater_id]) if params[:theater_id].present?
+    filter_showtimes.order(:time)
   end
 
   def update_available_seats(selected_seats, booking)
@@ -66,6 +77,10 @@ class Showtime < ApplicationRecord
       puts "Updated available seats and booked seats. Total price: #{total_price.round(2)}"
     end
   end 
+  
+  def end_time
+    time + 3.hours # Assuming you have a duration attribute for showtimes
+  end
 
   private
 
@@ -100,14 +115,19 @@ class Showtime < ApplicationRecord
 
   def time_difference_between_showtimes
     return unless time.present?
-
-    latest_showtime = Showtime.where(theater: theater, screen: screen)
-                              .where.not(id: id)
-                              .order(time: :desc)
-                              .first
-
-    if latest_showtime.present? && time <= latest_showtime.time + 3.hours
-      errors.add(:time, "must be at least 3 hours later than the latest showtime for the same theater and screen")
+  
+    existing_showtimes = Showtime.where(theater: theater, screen: screen)
+                                  .where.not(id: id)
+                                  .where('time <= ?', time)
+                                  .order(time: :asc)
+  
+    existing_showtimes.each do |showtime|
+      if showtime.end_time >= time
+        errors.add(:time, "conflicts with an existing showtime from #{showtime.time.strftime('%H:%M')} to #{showtime.end_time.strftime('%H:%M')} for the same theater and screen")
+        break
+      end
     end
   end
+  
+  
 end

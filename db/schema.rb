@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_04_04_130619) do
+ActiveRecord::Schema[7.0].define(version: 2024_04_19_055214) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -135,6 +135,16 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_04_130619) do
     t.index ["stage"], name: "index_events_raws_on_stage"
   end
 
+  create_table "movie_cast_and_crews", force: :cascade do |t|
+    t.string "name"
+    t.integer "role"
+    t.integer "kind"
+    t.bigint "movie_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["movie_id"], name: "index_movie_cast_and_crews_on_movie_id"
+  end
+
   create_table "movie_categories", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -147,6 +157,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_04_130619) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "movie_category_id"
+    t.string "trailer_url"
     t.index ["movie_category_id"], name: "index_movies_on_movie_category_id"
   end
 
@@ -256,6 +267,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_04_04_130619) do
   add_foreign_key "booking_transactions", "users"
   add_foreign_key "bookings", "showtimes"
   add_foreign_key "bookings", "users"
+  add_foreign_key "movie_cast_and_crews", "movies"
   add_foreign_key "movies", "movie_categories"
   add_foreign_key "ratings", "users"
   add_foreign_key "seat_categories", "movies"

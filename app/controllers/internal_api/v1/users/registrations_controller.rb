@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class InternalApi::V1::Users::RegistrationsController < Devise::RegistrationsController
+  skip_before_action :verify_authenticity_token, only: [:create]
   respond_to :json
 
   def respond_with(user, _opts = {})

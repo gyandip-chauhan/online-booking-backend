@@ -1,0 +1,10 @@
+<p>Welcome <%= @email %>!</p>
+
+<p>You can confirm your account email through the link below:</p>
+
+<p><% reset_password_link = "#{ENV['FRONTEND_APP_HOST']}/reset-password?reset_token=#{@token}" %>
+<%= link_to reset_password_link do %>
+   <button class="new-password-button">
+     Confirm my account
+   </button>
+<% end %></p>

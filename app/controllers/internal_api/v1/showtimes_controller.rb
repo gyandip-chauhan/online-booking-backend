@@ -4,9 +4,37 @@ module InternalApi::V1
     skip_before_action :authenticate_user!, :authenticate_user_using_x_auth_token, only: [:index, :show]
 
     def index
-      @categories = MovieCategory.includes(movies: :showtimes).joins(:movies).where(params[:movie_id].present? ? { movies: { id: params[:movie_id] } } : {}).distinct
-      render json: { categories: MovieCategorySerializer.new(@categories).as_json }
-    end  
+      movie = params[:movie_id] ? Movie.find(params[:movie_id]) : nil
+      
+      # @showtimes = Showtime.where('time >= ?', DateTime.current).where(params[:movie_id].present? ? { movie_id: params[:movie_id] } : {}).order(:time)
+      @showtimes = Showtime.filter(params)
+      
+      # Calculate price ranges
+      seat_categories = SeatCategory.where(params[:movie_id].present? ? { movie_id: params[:movie_id] } : {})
+      prices = seat_categories.pluck(:price).uniq
+      min_price = prices.min
+      max_price = prices.max
+      step = 50
+      price_ranges = []
+      if min_price != max_price
+        (min_price..max_price).step(step) do |start_price|
+          end_price = start_price + step
+          end_price = max_price if end_price > max_price
+          price_ranges << {value: "#{start_price}-#{end_price}", label: "#{start_price}-#{end_price}"} unless start_price == end_price
+        end
+      else
+        price_ranges << {value: "0-#{max_price}", label: "0-#{max_price}"}
+      end
+
+      # Render JSON response
+      render json: {
+        showtimes: ShowtimeSerializer.new(@showtimes).as_json,
+        movie: movie ? MovieSerializer.new(movie).as_json : nil,
+        price_ranges: price_ranges,
+        theaters: TheaterSerializer.new(Theater.all).as_json,
+        screens: ScreenSerializer.new(Screen.all).as_json
+      }
+    end
   
     def show
       @showtime = Showtime.find(params[:id])
