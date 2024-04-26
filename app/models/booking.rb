@@ -5,6 +5,8 @@ class Booking < ApplicationRecord
   has_one :theater, through: :showtime
   has_many :booked_seats, dependent: :destroy
   has_many :booking_transactions, dependent: :destroy
+  has_noticed_notifications model_name: 'Noticed::Event'
+  has_many :notification_mentions, as: :record, dependent: :destroy, class_name: 'Noticed::Event'
 
   before_destroy :update_showtime_seats
 

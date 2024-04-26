@@ -41,8 +41,10 @@ module InternalApi::V1
       @theater = Theater.find(params[:theater_id])
       @screen = Screen.find(params[:screen_id])
       @movie = Movie.find(params[:movie_id])
-      @seat_categories = SeatCategory.where(screen: @screen, theater: @theater, movie: @movie).order("price DESC")
-      @showtime_seats_group_by_sc = ShowtimeSeat.where(showtime: @showtime, seat_category: @seat_categories).group_by(&:seat_category_id).transform_values{|val| val.first}
+      @showtime_seats = @showtime.showtime_seats
+      seat_cat_ids = @showtime_seats.pluck(:seat_category_id).uniq
+      @seat_categories = SeatCategory.where(id: seat_cat_ids).order("price DESC")
+      @showtime_seats_group_by_sc = @showtime_seats.group_by(&:seat_category_id).transform_values{|val| val.first}
       
       response_data = {
         showtime: @showtime,

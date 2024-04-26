@@ -1,0 +1,7 @@
+<p class="lead">Hello <%= @resource.email %>,</p>
+<hr class="my-4">
+<p>Your booking for <%= @movie.title %> has been confirmed.</p>
+<div class="invoice-container">
+  <%= render 'bookings/invoice_table' %>
+</div>
+<p>Thank you for choosing our service!</p>

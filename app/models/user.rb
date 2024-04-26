@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_many :ratings, dependent: :destroy
   has_many :bookings, dependent: :destroy
   has_many :booking_transactions, dependent: :destroy
+  has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
+  has_many :notification_mentions, as: :record, dependent: :destroy, class_name: "Noticed::Event"
   before_create :set_token
 
   def my_bookings

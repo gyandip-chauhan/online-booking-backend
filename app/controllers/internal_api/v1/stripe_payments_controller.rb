@@ -67,6 +67,7 @@ module InternalApi::V1
 
           unless booking.confirmed?
             booking.update(source: 'Stripe', status: 'confirmed', stripe_payment_confirmed_at: Time.current)
+            BookingNotifier.with(record: booking).deliver_later(current_user)
           end
           render json: { notice: 'Payment successfull.', client_secret: @payment_intent.client_secret, booking: BookingSerializer.new(booking).serializable_hash[:data] }, status: :ok
         else

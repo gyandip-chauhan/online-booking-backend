@@ -47,6 +47,12 @@ Rails.application.routes.draw do
           post 'rate'
         end
       end
+
+      resources :notifications, only: [:index] do
+        collection do
+          post 'mark_as_read'
+        end
+      end
     end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

@@ -1,5 +1,5 @@
 class Showtime < ApplicationRecord
-  belongs_to :movie
+  belongs_to :movie, counter_cache: true
   belongs_to :theater
   belongs_to :screen
   has_many :bookings, dependent: :destroy
@@ -24,14 +24,14 @@ class Showtime < ApplicationRecord
   def self.filter(params)
     price_range = params[:price_range].present? ? params[:price_range].split('-').map(&:to_i) : nil
     date = params[:date].present? ? Date.parse(params[:date]) : Date.current
-
-    filter_showtimes = includes(:showtime_seats, :theater, :movie).where('DATE(time) = ?', date) if date.present?
+  
+    filter_showtimes = joins(showtime_seats: :seat_category).where('DATE(time) = ?', date) if date.present?
     filter_showtimes = filter_showtimes.where(movie_id: params[:movie_id]) if params[:movie_id].present?
     filter_showtimes = filter_showtimes.where(screen_id: params[:screen_id]) if params[:screen_id].present?
-    filter_showtimes = filter_showtimes.where(showtime_seats: { seat_category_id: SeatCategory.where(price: price_range) }) if price_range.present?
+    filter_showtimes = filter_showtimes.where("seat_categories.price >= ? AND seat_categories.price <= ?", price_range.first, price_range.last) if price_range.present?
     filter_showtimes = filter_showtimes.where(theater_id: params[:theater_id]) if params[:theater_id].present?
-    filter_showtimes.order(:time)
-  end
+    filter_showtimes.distinct.order(:time)
+  end  
 
   def update_available_seats(selected_seats, booking)
     total_price = 0.0
@@ -84,9 +84,13 @@ class Showtime < ApplicationRecord
 
   private
 
+  def is_available_seat_category?
+    SeatCategory.find_by(theater: theater, screen: screen, movie: movie).present? 
+  end
+
   def create_showtime_seats
     begin
-      unless SeatCategory.where(theater: theater, screen: screen, movie: movie).any?
+      unless is_available_seat_category?
         check_showtime_seats
       else
         SeatCategory.where(theater: theater, screen: screen, movie: movie).each{|sc| self.showtime_seats.create!(seat_category_id: sc.id, seats: sc.seats) }
@@ -97,17 +101,25 @@ class Showtime < ApplicationRecord
   end
 
   def check_showtime_seats
-    begin
-      unless SeatCategory.where(theater: theater, screen: screen, movie: movie).any?
-        unless (seat_category = SeatCategory.find_by(name: 'Golden', price: 250, theater: theater, screen: screen, movie: movie)).present?
-          seat_category = SeatCategory.create!(name: 'Golden', price: 250, theater: theater, screen: screen, movie: movie, start_num_of_seat: 1, end_num_of_seat: 10, seats: (1..10).to_a.join(','))
-        end
+    begin      
+      unless is_available_seat_category? 
+        seat_category = SeatCategory.create!(
+          name: 'Golden',
+          price: 250,
+          theater: theater,
+          screen: screen,
+          movie: movie,
+          start_num_of_seat: 1,
+          end_num_of_seat: 10,
+          seats: (1..10).to_a.join(',')
+        )
         self.showtime_seats.create!(seat_category_id: seat_category.id, seats: seat_category.seats)
       end
     rescue StandardError => e
       puts "Error in check_showtime_seats: #{e.message}"
     end
   end
+  
 
   def time_cannot_be_in_the_past
     errors.add(:time, "can't be in the past") if time.present? && time < DateTime.now
