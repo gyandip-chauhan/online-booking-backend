@@ -86,6 +86,7 @@ GEM
     bindex (0.8.1)
     bootsnap (1.17.0)
       msgpack (~> 1.2)
+    browser (5.3.1)
     builder (3.2.4)
     capybara (3.39.2)
       addressable
@@ -243,6 +244,11 @@ GEM
     rails-html-sanitizer (1.6.0)
       loofah (~> 2.21)
       nokogiri (~> 1.14)
+    rails_performance (1.2.1)
+      browser
+      railties
+      redis
+      redis-namespace
     railties (7.0.8)
       actionpack (= 7.0.8)
       activesupport (= 7.0.8)
@@ -262,6 +268,8 @@ GEM
       hooks (>= 0.2.1)
       redis (>= 2.2.0)
     redis (4.5.1)
+    redis-namespace (1.11.0)
+      redis (>= 4)
     regexp_parser (2.8.2)
     reline (0.4.1)
       io-console (~> 0.5)
@@ -271,6 +279,12 @@ GEM
       actionpack (>= 5.2)
       railties (>= 5.2)
     rexml (3.2.6)
+    rswag-api (2.13.0)
+      activesupport (>= 3.1, < 7.2)
+      railties (>= 3.1, < 7.2)
+    rswag-ui (2.13.0)
+      actionpack (>= 3.1, < 7.2)
+      railties (>= 3.1, < 7.2)
     ruby-odbc (0.999991)
     ruby-vips (2.2.0)
       ffi (~> 1.12)
@@ -367,8 +381,11 @@ DEPENDENCIES
   puma (~> 5.0)
   rack-cors
   rails (~> 7.0.3)
+  rails_performance
   recommendable
   redis (~> 4.5.1)
+  rswag-api
+  rswag-ui
   ruby-odbc
   sassc-rails (>= 2.1.2)
   selenium-webdriver

@@ -7,7 +7,7 @@ class Showtime < ApplicationRecord
 
   validates :time, presence: true
   validate :time_cannot_be_in_the_past
-  validate :time_difference_between_showtimes
+  validate :check_time_overlap
 
   after_create :create_showtime_seats
 
@@ -103,7 +103,7 @@ class Showtime < ApplicationRecord
   def check_showtime_seats
     begin      
       unless is_available_seat_category? 
-        seat_category = SeatCategory.create!(
+        if (seat_category = SeatCategory.create!(
           name: 'Golden',
           price: 250,
           theater: theater,
@@ -112,8 +112,9 @@ class Showtime < ApplicationRecord
           start_num_of_seat: 1,
           end_num_of_seat: 10,
           seats: (1..10).to_a.join(',')
-        )
-        self.showtime_seats.create!(seat_category_id: seat_category.id, seats: seat_category.seats)
+        ))
+          self.showtime_seats.create!(seat_category_id: seat_category.id, seats: seat_category.seats)
+        end
       end
     rescue StandardError => e
       puts "Error in check_showtime_seats: #{e.message}"
@@ -125,20 +126,15 @@ class Showtime < ApplicationRecord
     errors.add(:time, "can't be in the past") if time.present? && time < DateTime.now
   end
 
-  def time_difference_between_showtimes
+  def check_time_overlap
     return unless time.present?
   
-    existing_showtimes = Showtime.where(theater: theater, screen: screen)
-                                  .where.not(id: id)
-                                  .where('time <= ?', time)
-                                  .order(time: :asc)
+    overlapping_showtime = Showtime.where(theater_id: theater_id, screen_id: screen_id)
+                        .where("time >= ? AND time <= ?", time - 3.hours, time + 3.hours)
+                        .where.not(id: id)
+                        .exists?
   
-    existing_showtimes.each do |showtime|
-      if showtime.end_time >= time
-        errors.add(:time, "conflicts with an existing showtime from #{showtime.time.strftime('%H:%M')} to #{showtime.end_time.strftime('%H:%M')} for the same theater and screen")
-        break
-      end
-    end
+    errors.add(:time, "conflicts with an existing showtime from #{time.strftime('%H:%M')} to #{self.end_time.strftime('%H:%M')} for the same theater and screen") if overlapping_showtime
   end
   
   

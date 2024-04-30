@@ -15,7 +15,6 @@ module InternalApi::V1
           
           if booking.valid?  # Check validity before proceeding
             showtime.update_available_seats(selected_seats, booking)
-            user = current_user
             amount = booking.total_price.to_i * 100
             User.create_stripe_customers(current_user)
             payment_intent = create_payment_intent(amount, params['data']['payment_token'])
@@ -67,7 +66,19 @@ module InternalApi::V1
 
           unless booking.confirmed?
             booking.update(source: 'Stripe', status: 'confirmed', stripe_payment_confirmed_at: Time.current)
-            BookingNotifier.with(record: booking).deliver_later(current_user)
+
+            movie = booking.movie
+            booking_details = {
+              'Movie' => movie.title,
+              'Theater' => booking.showtime.theater.name,
+              'Location' => booking.showtime.theater.location,
+              'Date & Time' => booking.showtime.time.strftime('%B %d, %Y %I:%M %p'),
+              'Seats' => booking.booked_seats.group_by(&:seat_category).map { |sc, b_seats| "#{sc.name}: #{b_seats.pluck(:seats).join(',')}" }.flatten.join(","),
+              'Total Price' => booking.total_price
+            }
+            @message = "Movie(#{booking_details['Movie']}) Ticket Confirmed at #{booking_details['Theater']}, #{booking_details['Location']} on #{booking_details['Date & Time']}"
+
+            BookingNotifier.with(record: booking, message: @message).deliver_later(current_user)
           end
           render json: { notice: 'Payment successfull.', client_secret: @payment_intent.client_secret, booking: BookingSerializer.new(booking).serializable_hash[:data] }, status: :ok
         else

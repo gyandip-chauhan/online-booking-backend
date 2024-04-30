@@ -1,0 +1,199 @@
+openapi: 3.1.1
+info:
+  title: BookMyShow API
+  description: API for managing movies and showtimes
+  version: 1.0.0
+servers:
+  - url: http://example.com
+paths:
+  /internal_api/v1/movies:
+    get:
+      summary: Get a list of movies
+      description: Retrieves a list of movies from the database.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  movies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Movie'
+  /internal_api/v1/movies/{id}:
+    get:
+      summary: Get a movie by ID
+      description: Retrieves a movie by its ID from the database.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the movie to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Movie'
+
+  /internal_api/v1/showtimes:
+    get:
+      summary: Get a list of showtimes
+      description: Retrieves a list of showtimes from the database.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  showtimes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Showtime'
+  /internal_api/v1/showtimes/{id}:
+    get:
+      summary: Get a showtime by ID
+      description: Retrieves a showtime by its ID from the database.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the showtime to retrieve.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Showtime'
+    post:
+      summary: Book a showtime
+      description: Books a showtime with selected seats.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the showtime to book.
+          schema:
+            type: integer
+        - in: body
+          name: selected_seats
+          required: true
+          description: Selected seats for booking.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Seat'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  booking_id:
+                    type: integer
+                  redirect_to:
+                    type: string
+  /internal_api/v1/showtimes/{id}/select_seat:
+    post:
+      summary: Select seats for a showtime
+      description: Selects seats for booking on a showtime.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the showtime to select seats for.
+          schema:
+            type: integer
+        - in: body
+          name: selected_seats
+          required: true
+          description: Selected seats for booking.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Seat'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_price:
+                    type: integer
+components:
+  schemas:
+    Movie:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        movie_category_id:
+          type: integer
+        trailer_url:
+          type: string
+        showtimes_count:
+          type: integer
+
+    Showtime:
+      type: object
+      properties:
+        id:
+          type: integer
+        movie_id:
+          type: integer
+        theater_id:
+          type: integer
+        time:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        screen_id:
+          type: integer
+    Seat:
+      type: object
+      properties:
+        id:
+          type: integer
+        seat_number:
+          type: string
+        price:
+          type: integer
+        category:
+          type: string
+        available:
+          type: boolean

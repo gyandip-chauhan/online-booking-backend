@@ -2,12 +2,17 @@ require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
+  mount Rswag::Ui::Engine => '/api-docs'
+  mount Rswag::Api::Engine => '/api-docs'
   root to: redirect('/admin')
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self) rescue ActiveAdmin::DatabaseHitDuringLoad
   devise_for :users, skip: [:sessions, :registrations], controllers: {
     confirmations: "users/confirmations"
   }
+  authenticate :admin_user do
+    mount RailsPerformance::Engine, at: 'rails/performance'
+  end
   namespace :internal_api, defaults: { format: "json" } do
     namespace :v1 do
       namespace :users do

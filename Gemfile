@@ -85,6 +85,7 @@ group :development do
 
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem 'rails_performance'
 end
 
 group :test do
@@ -102,3 +103,5 @@ gem 'fast_jsonapi'
 gem 'rack-cors'
 gem 'stripe'
 gem 'noticed'
+gem 'rswag-api'
+gem 'rswag-ui'
