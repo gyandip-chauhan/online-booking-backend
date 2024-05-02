@@ -1,25 +1,24 @@
 # app/controllers/movies_controller.rb
 module InternalApi::V1
   class MoviesController < ApplicationController
-    before_action :set_movie, only: [:show, :like]
+    before_action :set_movie, only: [:show]
     skip_before_action :authenticate_user!, :authenticate_user_using_x_auth_token, only: [:index, :show]
 
     def index
       RailsPerformance.measure("Movie listing", "internal_api/v1/movies#index") do
-        @movies = Movie.includes(:showtimes).all
+        @movies = Movie.includes({avatar_attachment: :blob}).all
       end
-      render json: {movies: MovieSerializer.new(@movies)}, status: :ok
+      render json: {movies: MovieSerializer.new(@movies, {params: {disable_showtimes: true, disable_casts: true, disable_crews: true}})}, status: :ok
     end
 
     def show
-      @movie = Movie.find(params[:id])
-      render json: { movie: MovieSerializer.new(@movie) }, status: :ok
+      render json: { movie: MovieSerializer.new(@movie, {params: {disable_showtimes: true}}) }, status: :ok
     end
 
     private
 
     def set_movie
-      @movie = Movie.find(params[:id])
+      @movie = Movie.includes({avatar_attachment: :blob}, movie_cast_and_crews: {image_attachment: :blob}).find(params[:id])
     end
 
     def movie_params

@@ -2,7 +2,7 @@ module InternalApi::V1
   class ShowtimeSerializer < ApplicationSerializer
     attributes :id, :time, :screen_id, :theater_id, :movie_id, :created_at, :updated_at
     attribute :movie do |object|
-      MovieSerializer.new(object.movie, {params: {disable_showtimes: true}})
+      MovieSerializer.new(object.movie, {params: {disable_showtimes: true, disable_crews: true, disable_casts: true}})
     end
     attribute :theater do |object|
       TheaterSerializer.new(object.theater)

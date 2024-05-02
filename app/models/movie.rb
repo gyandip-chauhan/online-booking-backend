@@ -10,6 +10,14 @@ class Movie < ApplicationRecord
 
   validates :title, presence: true
 
+  def casts
+    movie_cast_and_crews.where(kind: 'cast')
+  end
+
+  def crews
+    movie_cast_and_crews.where(kind: 'crew')
+  end
+  
   def self.ransackable_attributes(auth_object = nil)
     %w[id title description movie_category.name trailer_url created_at updated_at ratings.value showtimes.theater.name showtimes.theater.location showtimes.datetime seat_categories.name]
   end

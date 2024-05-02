@@ -4,7 +4,7 @@ module InternalApi::V1
     
     attribute :image_url do |object|
       if object.image.attached?
-        ENV['HOST_URL'] + Rails.application.routes.url_helpers.rails_blob_path(object.image, only_path: true)
+        Rails.application.routes.url_helpers.url_for(object.image)
       else
         nil
       end

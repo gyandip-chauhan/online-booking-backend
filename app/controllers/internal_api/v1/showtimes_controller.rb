@@ -7,7 +7,9 @@ module InternalApi::V1
       movie = params[:movie_id] ? Movie.find(params[:movie_id]) : nil
       
       # @showtimes = Showtime.where('time >= ?', DateTime.current).where(params[:movie_id].present? ? { movie_id: params[:movie_id] } : {}).order(:time)
-      @showtimes = Showtime.filter(params)
+      RailsPerformance.measure("Showtime listing", "internal_api/v1/showtimes#index") do
+        @showtimes = Showtime.filter(params)
+      end
       
       # Calculate price ranges
       seat_categories = SeatCategory.where(params[:movie_id].present? ? { movie_id: params[:movie_id] } : {})

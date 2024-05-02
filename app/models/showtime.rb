@@ -25,7 +25,7 @@ class Showtime < ApplicationRecord
     price_range = params[:price_range].present? ? params[:price_range].split('-').map(&:to_i) : nil
     date = params[:date].present? ? Date.parse(params[:date]) : Date.current
   
-    filter_showtimes = joins(showtime_seats: :seat_category).where('DATE(time) = ?', date) if date.present?
+    filter_showtimes = includes({showtime_seats: :seat_category}, {movie: {avatar_attachment: :blob}}, :theater, :screen).where('DATE(time) = ?', date) if date.present?
     filter_showtimes = filter_showtimes.where(movie_id: params[:movie_id]) if params[:movie_id].present?
     filter_showtimes = filter_showtimes.where(screen_id: params[:screen_id]) if params[:screen_id].present?
     filter_showtimes = filter_showtimes.where("seat_categories.price >= ? AND seat_categories.price <= ?", price_range.first, price_range.last) if price_range.present?
